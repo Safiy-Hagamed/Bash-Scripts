@@ -1,4 +1,10 @@
 #!/bin/bash
+
+#---------------------------------------------
+#Script for adding new users using bash script
+#Script version: v3
+#---------------------------------------------
+
 finished=0
 read -p "Enter new username -" user_name
 useradd -m -s /bin/bash $user_name
