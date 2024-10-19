@@ -1,0 +1,7 @@
+#!/bin/bash
+
+find $HOME >> file_scan.log
+
+while true; do
+	cat file_scan.log
+done

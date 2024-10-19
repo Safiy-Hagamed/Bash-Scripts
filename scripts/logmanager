@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------------------------
+# log manager script that will delete outdated log files that are found in a directory|
+# version 1									      |
+#--------------------------------------------------------------------------------------
+
+
+#edit variables here
+
+log_file_location=/var/log/
+days_older=30
+deleted_f_location=/var/log/logmanager
+timestamp=$(date +"%Y-%m-%d-%H:%M")
+log_file="$timestamp.log"
+
+if [ -d $deleted_f_location ];
+then
+	echo "folder already exists"
+else
+	mkdir $deleted_f_location
+fi
+
+find $log_file_location -mtime +30 -exec echo "deleted: {}" \; -delete >> $deleted_f_location/$log_file
