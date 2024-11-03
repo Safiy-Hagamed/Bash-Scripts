@@ -1,0 +1,11 @@
+#!/bin/bash
+
+directory=/etc
+if [ -d $directory ]
+then
+	echo "the directory of $directory is available"
+	echo $?
+else
+	echo "The directory of $directory is not available"
+	echo $?
+fi

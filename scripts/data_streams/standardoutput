@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#this command will find all the files in the etc and some will be standard output
+
+find /etc -type f 1>outputlog.txt 2>outputerrorlog.txt
+

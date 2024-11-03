@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#color variables
+red='tput setaf 1'
+green='tput setaf 2'
+yellow='tput setaf 3'
+blue='tput setaf 5'
+default='tput sgr0'
+finished=0
+
+#checking for sudo access
+
+if [ $EUID -ne 0 ]; then
+	$red && echo "This script requires sudo access" && $default
+	exit 1
+else
+	$blue && read -p "Enter The Username - " user_name && $default
+fi
+
+if id "$user_name" &>/dev/null; then
+    # Get the home directory of the user
+    home_dir=$(eval echo "~$user_name")
+
+	if [ -d "$home_dir" ]
+	then
+		backup_file="/tmp/${username}_backup_$(date +%Y-%m-%d-%H%:M%:S).tar.gz"
+		$yellow && tar -czvf "$backup_file" "$home_dir" && $default
+		sudo mv "$backup_file" /var/backups/
+
+		if [ $? -eq 0 ]
+		then
+			$green && echo "Backup successfully created and moved to /var/backups/" && $default
+			echo "schedule backup for the user"
+			$green
+			echo "1 - every day"
+			echo "2 - every week"
+			echo "3 - every month"
+			echo "4 - dont schedule backup"
+			while [ $finished -eq 0 ]
+			do
+			$blue && read -p "enter your option - " caseoption && $default
+			case $caseoption in
+				1)(crontab -l ; echo "0 0 * * * /usr/bin/backup") | crontab -
+				  echo "cronjob scheduled for every day" && exit;;
+				2)(crontab -l ; echo "0 0 * * 0 /usr/bin/backup") | crontab -
+				  echo "cronjob scheduled for every Week" && exit;;
+				3)(crontab -l ; echo "0 0 1 * * /usr/bin/backup") | crontab -
+				  echo "cronjob scheduled for every month" && exit;;
+				4)finished=1 && $green echo "script exiting...";;
+				*)echo "enter a valid option"
+			esac
+			done
+
+			else
+			$red && echo "Failed to move the backup file to /var/backups/" && $default
+			exit 1
+			fi
+    	else
+		$red && echo "Home directory for $user_name does not exist." && $default
+	fi
+
+else
+    $red && echo "User $user_name does not exist." && $default
+fi

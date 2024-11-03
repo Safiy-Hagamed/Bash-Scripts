@@ -1,0 +1,10 @@
+#!/bin/bash
+
+var=69
+while [ $var -le 6969 ]
+do
+	echo $var
+	var=$(( $var +100 ))
+	sleep 0.2
+done
+	echo "found 6969. Enjoy :)"

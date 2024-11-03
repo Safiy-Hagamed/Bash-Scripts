@@ -1,0 +1,8 @@
+#!/bin/bash
+
+while [ -f "$HOME/learn/whileloops/testfile.1" ]
+do
+	echo " the file is available in this date $(date)"
+	sleep 0.6
+done
+	echo " the file doesn't exist in this date $(date)"

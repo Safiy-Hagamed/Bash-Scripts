@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# this command is to get input from the user and creating a useraccount for them in the machine
+
+echo "Enter Your Name :"
+read name
+echo "Enter Your GroupName"
+read groupname >$name.txt>$groupname
+
+sudo adduser $name
+

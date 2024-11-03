@@ -1,0 +1,68 @@
+#!/bin/bash
+
+#--------------------------------------------|
+#Checks fors cpu,memory,disk usage	     |
+#and creates a log file for better monitoring|
+#script version: v1			     |
+#--------------------------------------------|
+
+
+#checks for pipe and error flow control
+set -e
+set -f
+set -o
+
+# Thresholds for alerts (customize as needed)
+Max_cpu_usage=70
+max_memory_usage=80
+max_disk_usage=75
+
+# Log file
+log_file="/var/log/pc_monitor.log"
+
+# Function to check CPU usage
+cpu_func() {
+    idlecpu=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/")
+    cpuusage=$(echo "100 - $idlecpu" | bc)
+    echo "CPU Usage: ${cpuusage}%"
+    if (( $(echo "$cpuusage > $Max_cpu_usage" | bc -l) )); then
+        echo "Warning: CPU usage is above $Max_cpu_usage%: $cpuusage%" >> $log_file
+    fi
+}
+
+# Function to check memory usage
+memory_func() {
+    memorytotal=$(free -m | awk '/^Mem:/{print $2}')
+    memoryused=$(free -m | awk '/^Mem:/{print $3}')
+    memoryusage=$(echo "scale=2; $memoryused/$memorytotal*100" | bc)
+    echo "Memory Usage: ${memoryusage}%"
+    if (( $(echo "$memoryusage > $max_memory_usage" | bc -l) )); then
+        echo "Warning: Memory usage is above $max_memory_usage%: $memoryusage%" >> $log_file
+    fi
+}
+
+# Function to check disk usage
+disk_func() {
+    diskusage=$(df / | awk 'NR==2 {gsub(/%/, ""); print $5}')
+    echo "Disk Usage: ${diskusage}%"
+    if (( $(echo "$diskusage > $max_disk_usage" | bc -l) )); then
+        echo "Warning: Disk usage is above $max_disk_usage%: $diskusage%" >> $log_file
+    fi
+}
+
+# log system information
+logs() {
+    echo "- $(date) -" >> $log_file
+    echo "System Information" >> $log_file
+    echo "------------------" >> $log_file
+    cpu_func >> $log_file
+    memory_func >> $log_file
+    disk_func >> $log_file
+    echo "" >> $log_file
+}
+
+# we can use it on crontabs
+while true; do
+    logs
+    sleep 60
+done

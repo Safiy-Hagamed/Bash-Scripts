@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# this code is written based on many website forums and it worked perfectly in my machine
+
+# debian based code
+if command -v apt-get >/dev/null; then
+	sudo apt-get update && sudo apt-get upgrade -y
+
+# red hat
+elif command -v dnf >/dev/null; then
+	sudo dnf upgrade --refresh -y
+
+elif command -v yum >/dev/null; then
+	sudo yum update -y
+
+# Arch Based
+elif command -v pacman >/dev/null; then
+	sudo pacman -Syu --noconfirm
+
+# SUSE Based
+elif command -v zypper >/dev/null; then
+	sudo zypper refresh && sudo zypper update -y
+
+# IF None of the linux distributions found
+else
+	echo "Unsupported Linux Distribution"
+	exit 1
+fi
+
+echo "System update completed"
+

@@ -1,0 +1,39 @@
+#!/bin/bash
+finished=0
+	read -p "Enter Username -" user_name
+	grep $user_name /etc/passwd
+if [ $? -eq 0 ]
+then
+tput setaf 6
+	echo "1)Change password"
+	echo "2)Add to an existing group"
+	echo "3)Create a new group and add"
+	echo "4)Add user to sudoers list"
+	echo "5)Remove user from sudoers list"
+	echo "6)Remove user from group"
+	echo "7)delete an existing group"
+	echo "8)delete useraccount"
+	echo "9)exit"
+tput sgr0
+else
+	tput setaf 1 &&	echo "some error occured please contact devops team" && tput sgr0
+	exit
+fi
+while [ $finished -eq 0 ]
+do
+read -p "Enter your option -" distro
+case $distro in
+	1)passwd $user_name;;
+	2)tput setaf 3;
+	tail /etc/group && tput sgr 0;
+	read -p "enter a valid group name -" groupname && usermod -aG $groupname $user_name && tput setaf 2 && echo "$user_name has been added to the group $groupname" && tput sgr0;;
+	3)read -p "New group name -" newgroup && groupadd $newgroup && usermod -aG $newgroup $user_name && tput setaf 2 && echo "$newgroup has been created and $user_name has been added" && tput sgr0;;
+	4)usermod -aG sudo $user_name && tput setaf 2 && echo "$user_name has been added to sudoers" && tput sgr0;;
+	5)gpasswd -d $user_name sudo;;
+	6)read -p "group name -" rmgrp && gpasswd -d $user_name $rmgrp;;
+	7)tput setaf 3 && tail /etc/group && tput sgr0 && read -p "Name of the Group -" delgroup && groupdel $delgroup;;
+	8)sudo userdel -rf $user_name;;
+	9)finished=1;;
+	*)tput setaf 1 && echo "Please enter a valid option" && tput sgr0
+esac
+done

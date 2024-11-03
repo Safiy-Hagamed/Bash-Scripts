@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for file in /var/log/*.log.tar.gz
+do
+	sudo rm  $file
+done
+
